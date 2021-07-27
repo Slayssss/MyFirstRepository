@@ -12,42 +12,53 @@ namespace WorkWithFiles
     {
         static void Main(string[] args)
         {
-            var classes = new[]
+            var phoneBook = new List<Contact>();
+
+            // добавляем контакты
+            phoneBook.Add(new Contact("Игорь", "Николаев", 79990000001, "igor@example.com"));
+            phoneBook.Add(new Contact("Сергей", "Довлатов", 79990000010, "serge@example.com"));
+            phoneBook.Add(new Contact("Анатолий", "Карпов", 79990000011, "anatoly@example.com"));
+            phoneBook.Add(new Contact("Валерий", "Леонтьев", 79990000012, "valera@example.com"));
+            phoneBook.Add(new Contact("Сергей", "Брин", 799900000013, "serg@example.com"));
+            phoneBook.Add(new Contact("Иннокентий", "Смоктуновский", 799900000013, "innokentii@example.com"));
+
+            while (true)
             {
-            new Classroom { Students = {"Evgeniy", "Sergey", "Andrew"}, },
-            new Classroom { Students = {"Anna", "Viktor", "Vladimir"}, },
-            new Classroom { Students = {"Bulat", "Alex", "Galina"}, }
-            };
+                var keyChar = Console.ReadKey().KeyChar; // получаем символ с консоли
 
-            var allStudents = GetAllStudents(classes);
+                var parsed = Int32.TryParse(keyChar.ToString(), out int pageNumber);
 
-            Console.WriteLine(string.Join(" ", allStudents));
-        }
+                if (!parsed || pageNumber < 1 || pageNumber > 3)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Страницы не существует");
+                }
+                else
+                {
+                    var pageContent = phoneBook.OrderBy(pers => pers.Name).ThenBy(pers => pers.LastName).Skip( (pageNumber - 1) * 2).Take(2);
+                    Console.WriteLine();
 
-        static string[] GetAllStudents(Classroom[] classes)
-        {
-
-            List<string> studentsNames = new List<string>();
-
-            // Напишите метод, который соберет всех учеников всех классов в один список, используя LINQ.
-            var studs = classes.Select(cls => new
-            {
-                StudNames = cls.Students.Select(name => name)
-            });
-
-            foreach (var st in studs)
-            {
-                foreach (string name in st.StudNames)
-                    studentsNames.Add(name);
+                    // вывод результата на консоль
+                    foreach (var contact in pageContent)
+                        Console.WriteLine($"{contact.Name} : {contact.LastName} : {contact.Email} : {contact.PhoneNumber}");
+                }
             }
-
-            return studentsNames.ToArray();
         }
+    }
 
-        public class Classroom
+    public class Contact // модель класса
+    {
+        public Contact(string name, string lastName, long phoneNumber, String email) // метод-конструктор
         {
-            public List<string> Students = new List<string>();
+            Name = name;
+            LastName = lastName;
+            PhoneNumber = phoneNumber;
+            Email = email;
         }
 
+        public String Name { get; }
+        public String LastName { get; }
+        public long PhoneNumber { get; }
+        public String Email { get; }
     }
 }
